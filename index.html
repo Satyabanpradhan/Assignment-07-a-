@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>DOM Explorer Task Manager</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-theme="dark">
+
+    <!-- Header -->
+
+    <header class="header">
+        <h1>DOM Explorer</h1>
+
+        <button id="themeBtn" class="theme-toggle" aria-label="Switch to light theme">
+            <span class="theme-icon" aria-hidden="true">☾</span>
+            <span class="theme-text">Dark</span>
+        </button>
+    </header>
+
+    <!-- Task Form -->
+
+    <section class="form-section">
+
+        <h2>Create Task</h2>
+
+        <form id="taskForm">
+
+            <input
+                type="text"
+                id="taskInput"
+                placeholder="Enter Task"
+                required
+            >
+
+            <select id="category">
+                <option value="Study">Study</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+            </select>
+
+            <button type="submit">
+                Add Task
+            </button>
+
+        </form>
+
+    </section>
+
+    <!-- Search & Filter -->
+
+    <section class="controls">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search Task..."
+        >
+
+        <select id="filterCategory">
+            <option value="all">
+                All Categories
+            </option>
+
+            <option value="Study">
+                Study
+            </option>
+
+            <option value="Work">
+                Work
+            </option>
+
+            <option value="Personal">
+                Personal
+            </option>
+        </select>
+
+        <button id="clearAllBtn">
+            Clear All
+        </button>
+
+    </section>
+
+    <!-- Counter -->
+
+    <section class="stats">
+
+        <div>
+            Total :
+            <span id="totalTasks">0</span>
+        </div>
+
+        <div>
+            Completed :
+            <span id="completedTasks">0</span>
+        </div>
+
+        <div>
+            Pending :
+            <span id="pendingTasks">0</span>
+        </div>
+
+    </section>
+
+    <!-- Task List -->
+
+    <section>
+
+        <h2>Your Tasks</h2>
+
+        <div id="taskContainer">
+
+        </div>
+
+    </section>
+
+    <!-- Event Propagation -->
+
+    <section class="demo-section">
+
+        <h2>
+            Event Propagation Demo
+        </h2>
+
+        <p>
+            Open Console
+        </p>
+
+        <div id="grandparent">
+
+            Grandparent
+
+            <div id="parent">
+
+                Parent
+
+                <button id="childBtn">
+                    Child Button
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Browser Rendering Pipeline -->
+
+    <section class="pipeline">
+
+        <h2>
+            Browser Rendering Pipeline
+        </h2>
+
+        <div class="flow-box">
+            HTML
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            Parsing
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            Tokenization
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            DOM Tree
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            CSS
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            CSSOM Tree
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            DOM Tree + CSSOM Tree
+        </div>
+
+        <div class="arrow">
+            ↓
+        </div>
+
+        <div class="flow-box">
+            Render Tree
+        </div>
+
+    </section>
+
+    <!-- Template -->
+
+    <template id="taskTemplate">
+
+        <div
+            class="task-card"
+            data-id=""
+            data-status="pending"
+            data-category=""
+        >
+
+            <h3 class="task-title">
+                Task Name
+            </h3>
+
+            <p class="task-category">
+                Category
+            </p>
+
+            <div class="task-actions">
+
+                <button class="edit-btn">
+                    <span aria-hidden="true">✎</span>
+                    Edit
+                </button>
+
+                <button class="complete-btn">
+                    <span aria-hidden="true">✓</span>
+                    Complete
+                </button>
+
+                <button class="delete-btn">
+                    <span aria-hidden="true">×</span>
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </template>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
