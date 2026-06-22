@@ -6,14 +6,15 @@
 }
 
 body {
-    background: #eaf2ff;
-    color: #102a43;
+    background: #eef7f4;
+    color: #263238;
     padding: 20px;
+    transition: background 0.3s, color 0.3s;
 }
 
 body.dark {
-    background: #102a43;
-    color: #eaf2ff;
+    background: #18222b;
+    color: #edf4f2;
 }
 
 .header {
@@ -29,11 +30,21 @@ body.dark {
 .demo-section,
 .pipeline {
     background: white;
-    border: 2px solid #2f80ed;
-    border-radius: 8px;
+    border: 2px solid #7ab7aa;
+    border-radius: 10px;
     padding: 18px;
     margin-bottom: 22px;
-    box-shadow: 0 5px 15px #c8d9f0;
+    box-shadow: 0 8px 18px #d5e7e2;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.3s;
+}
+
+.form-section:hover,
+.controls:hover,
+.stats:hover,
+.demo-section:hover,
+.pipeline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px #c8ddd7;
 }
 
 body.dark .form-section,
@@ -42,13 +53,13 @@ body.dark .stats,
 body.dark .demo-section,
 body.dark .pipeline,
 body.dark .task-card {
-    background: #183b5b;
+    background: #24323b;
     box-shadow: none;
 }
 
 h1,
 h2 {
-    color: #2f80ed;
+    color: #2f7d72;
 }
 
 #taskForm,
@@ -64,22 +75,41 @@ input,
 select,
 button {
     padding: 10px;
-    border: 2px solid #2f80ed;
+    border: 2px solid #7ab7aa;
     border-radius: 6px;
     font-size: 16px;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
 }
 
 input,
 select {
     background: white;
-    color: #102a43;
+    color: #263238;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 button {
-    background: #2f80ed;
+    background: #4c9a8b;
     color: white;
     cursor: pointer;
     font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: #3c8175;
+    border-color: #3c8175;
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #d9a441;
+    box-shadow: 0 0 0 3px #f3dfb7;
 }
 
 #themeBtn {
@@ -108,10 +138,17 @@ button {
 
 .task-card {
     background: white;
-    border: 2px solid #2f80ed;
-    border-radius: 8px;
+    border: 2px solid #7ab7aa;
+    border-radius: 10px;
     padding: 15px;
-    box-shadow: 0 5px 12px #d5e2f2;
+    box-shadow: 0 8px 18px #d5e7e2;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.task-card:hover {
+    transform: translateY(-4px);
+    border-color: #d9a441;
+    box-shadow: 0 14px 26px #c8ddd7;
 }
 
 body.dark .task-card {
@@ -123,7 +160,7 @@ body.dark .task-card {
 }
 
 .task-category {
-    color: #2f80ed;
+    color: #2f7d72;
     margin-bottom: 12px;
     font-weight: bold;
 }
@@ -132,23 +169,38 @@ body.dark .task-category,
 body.dark h1,
 body.dark h2,
 body.dark .arrow {
-    color: #80bdff;
+    color: #9ed8cd;
 }
 
 .edit-btn {
-    background: #f4b400;
-    border-color: #f4b400;
-    color: #102a43;
+    background: #d9a441;
+    border-color: #d9a441;
+    color: #1f2933;
+}
+
+.edit-btn:hover {
+    background: #c7922d;
+    border-color: #c7922d;
 }
 
 .complete-btn {
-    background: #2e9d50;
-    border-color: #2e9d50;
+    background: #4f9d69;
+    border-color: #4f9d69;
+}
+
+.complete-btn:hover {
+    background: #3f8356;
+    border-color: #3f8356;
 }
 
 .delete-btn {
-    background: #d93025;
-    border-color: #d93025;
+    background: #d65a50;
+    border-color: #d65a50;
+}
+
+.delete-btn:hover {
+    background: #bd4b43;
+    border-color: #bd4b43;
 }
 
 .completed {
@@ -162,26 +214,32 @@ body.dark .arrow {
 
 #grandparent,
 #parent {
-    border: 2px solid #2f80ed;
-    border-radius: 8px;
+    border: 2px solid #7ab7aa;
+    border-radius: 10px;
     padding: 22px;
     margin-top: 15px;
+    transition: transform 0.25s, background 0.25s;
 }
 
 #grandparent {
-    background: #d6e8ff;
+    background: #dff3ee;
 }
 
 #parent {
-    background: #bdd9ff;
+    background: #cce7e0;
+}
+
+#grandparent:hover,
+#parent:hover {
+    transform: scale(1.01);
 }
 
 body.dark #grandparent {
-    background: #24527a;
+    background: #284841;
 }
 
 body.dark #parent {
-    background: #2f6694;
+    background: #315c53;
 }
 
 #childBtn {
@@ -191,15 +249,20 @@ body.dark #parent {
 .event-log {
     margin-top: 15px;
     padding: 12px;
-    border: 2px solid #2f80ed;
+    border: 2px solid #7ab7aa;
     border-radius: 8px;
     min-height: 45px;
+    background: #f7fbfa;
 }
 
 body.dark input,
 body.dark select {
-    background: #102a43;
-    color: #eaf2ff;
+    background: #18222b;
+    color: #edf4f2;
+}
+
+body.dark .event-log {
+    background: #18222b;
 }
 
 .pipeline {
@@ -207,17 +270,23 @@ body.dark select {
 }
 
 .flow-box {
-    background: #2f80ed;
+    background: #4c9a8b;
     color: white;
     padding: 12px;
     border-radius: 8px;
     width: 260px;
     margin: 10px auto;
     font-weight: bold;
+    transition: transform 0.25s, background 0.25s;
+}
+
+.flow-box:hover {
+    transform: scale(1.04);
+    background: #3c8175;
 }
 
 .arrow {
-    color: #2f80ed;
+    color: #2f7d72;
     font-size: 22px;
 }
 
