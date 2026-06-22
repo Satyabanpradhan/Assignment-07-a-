@@ -11,16 +11,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body data-theme="dark">
+<body>
 
     <!-- Header -->
 
     <header class="header">
         <h1>DOM Explorer</h1>
 
-        <button id="themeBtn" class="theme-toggle" aria-label="Switch to light theme">
-            <span class="theme-icon" aria-hidden="true">☾</span>
-            <span class="theme-text">Dark</span>
+        <button id="themeBtn">
+            Dark Mode
         </button>
     </header>
 
@@ -129,7 +128,7 @@
         </h2>
 
         <p>
-            Open Console
+            Click the child button to see capturing and bubbling order.
         </p>
 
         <div id="grandparent">
@@ -146,6 +145,10 @@
 
             </div>
 
+        </div>
+
+        <div id="eventLog" class="event-log">
+            Event order will appear here.
         </div>
 
     </section>
@@ -242,17 +245,14 @@
             <div class="task-actions">
 
                 <button class="edit-btn">
-                    <span aria-hidden="true">✎</span>
                     Edit
                 </button>
 
                 <button class="complete-btn">
-                    <span aria-hidden="true">✓</span>
                     Complete
                 </button>
 
                 <button class="delete-btn">
-                    <span aria-hidden="true">×</span>
                     Delete
                 </button>
 
