@@ -1,398 +1,267 @@
-const taskForm = document.querySelector("#taskForm");
-const taskInput = document.querySelector("#taskInput");
-const category = document.querySelector("#category");
-const taskContainer = document.querySelector("#taskContainer");
+let taskForm = document.querySelector("#taskForm");
+let taskInput = document.querySelector("#taskInput");
+let categoryInput = document.querySelector("#category");
+let taskContainer = document.querySelector("#taskContainer");
 
-const searchInput = document.querySelector("#searchInput");
-const filterCategory = document.querySelector("#filterCategory");
+let searchInput = document.querySelector("#searchInput");
+let filterCategory = document.querySelector("#filterCategory");
 
-const totalTasks = document.querySelector("#totalTasks");
-const completedTasks = document.querySelector("#completedTasks");
-const pendingTasks = document.querySelector("#pendingTasks");
-
-const clearAllBtn = document.querySelector("#clearAllBtn");
-const themeBtn = document.querySelector("#themeBtn");
+let totalTasks = document.querySelector("#totalTasks");
+let completedTasks = document.querySelector("#completedTasks");
+let pendingTasks = document.querySelector("#pendingTasks");
+let clearAllBtn = document.querySelector("#clearAllBtn");
+let themeBtn = document.querySelector("#themeBtn");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let savedTheme = localStorage.getItem("theme");
 
-renderTasks();
+if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.textContent = "Light Mode";
+}
 
-/* --------------------------
-   ADD TASK
---------------------------- */
+showTasks();
 
-taskForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+taskForm.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-  const title = taskInput.value.trim();
+    let taskName = taskInput.value.trim();
 
-  if (!title) return;
+    if (taskName === "") {
+        return;
+    }
 
-  const task = {
-    id: Date.now(),
-    title,
-    category: category.value,
-    status: "pending",
-  };
+    let newTask = {
+        id: Date.now(),
+        title: taskName,
+        category: categoryInput.value,
+        status: "pending"
+    };
 
-  tasks.push(task);
+    tasks.push(newTask);
+    saveTasks();
+    showTasks();
 
-  saveTasks();
-  renderTasks();
-
-  taskForm.reset();
+    taskInput.value = "";
 });
 
-/* --------------------------
-   RENDER TASKS
---------------------------- */
+function showTasks() {
+    taskContainer.innerHTML = "";
 
-function renderTasks() {
-  taskContainer.innerHTML = "";
+    for (let i = 0; i < tasks.length; i++) {
+        let task = tasks[i];
 
-  tasks.forEach((task) => {
-    const card = document.createElement("div");
+        let card = document.createElement("div");
+        card.className = "task-card";
 
-    card.classList.add("task-card");
+        if (task.status === "completed") {
+            card.classList.add("completed");
+        }
+
+        card.dataset.id = task.id;
+        card.dataset.category = task.category;
+
+        let title = document.createElement("h3");
+        title.className = "task-title";
+        title.textContent = task.title;
+
+        let category = document.createElement("p");
+        category.className = "task-category";
+        category.textContent = task.category;
+
+        let actions = document.createElement("div");
+        actions.className = "task-actions";
+
+        let editButton = document.createElement("button");
+        editButton.className = "edit-btn";
+        editButton.textContent = "Edit";
+
+        let completeButton = document.createElement("button");
+        completeButton.className = "complete-btn";
+        completeButton.textContent = "Complete";
+
+        let deleteButton = document.createElement("button");
+        deleteButton.className = "delete-btn";
+        deleteButton.textContent = "Delete";
+
+        actions.append(editButton);
+        actions.append(completeButton);
+        actions.append(deleteButton);
+
+        card.append(title);
+        card.append(category);
+        card.append(actions);
+
+        taskContainer.append(card);
+    }
+
+    countTasks();
+    searchAndFilter();
+}
+
+taskContainer.addEventListener("click", function (event) {
+    let button = event.target;
+    let card = button.closest(".task-card");
+
+    if (card === null) {
+        return;
+    }
+
+    let id = Number(card.dataset.id);
+
+    if (button.classList.contains("delete-btn")) {
+        deleteTask(id);
+    }
+
+    if (button.classList.contains("complete-btn")) {
+        completeTask(id);
+    }
+
+    if (button.classList.contains("edit-btn")) {
+        editTask(id);
+    }
+});
+
+function deleteTask(id) {
+    tasks = tasks.filter(function (task) {
+        return task.id !== id;
+    });
+
+    saveTasks();
+    showTasks();
+}
+
+function completeTask(id) {
+    let task = tasks.find(function (task) {
+        return task.id === id;
+    });
 
     if (task.status === "completed") {
-      card.classList.add("completed");
+        task.status = "pending";
+    } else {
+        task.status = "completed";
     }
 
-    card.setAttribute("data-id", task.id);
-    card.setAttribute("data-status", task.status);
-    card.setAttribute("data-category", task.category);
-
-    const title = document.createElement("h3");
-    title.classList.add("task-title");
-
-    const text = document.createTextNode(task.title);
-    title.append(text);
-
-    const categoryText = document.createElement("p");
-    categoryText.classList.add("task-category");
-    categoryText.textContent = task.category;
-
-    const actions = document.createElement("div");
-    actions.classList.add("task-actions");
-
-    actions.innerHTML = `
-      <button class="edit-btn"><span aria-hidden="true">✎</span>Edit</button>
-      <button class="complete-btn"><span aria-hidden="true">✓</span>Complete</button>
-      <button class="delete-btn"><span aria-hidden="true">×</span>Delete</button>
-    `;
-
-    card.append(title);
-    card.append(categoryText);
-    card.append(actions);
-
-    taskContainer.append(card);
-  });
-
-  updateCounters();
+    saveTasks();
+    showTasks();
 }
 
-/* --------------------------
-   EVENT DELEGATION
---------------------------- */
-
-taskContainer.addEventListener("click", (e) => {
-  const card = e.target.closest(".task-card");
-  const actionBtn = e.target.closest("button");
-
-  if (!card || !actionBtn) return;
-
-  const id = Number(card.dataset.id);
-
-  /* DELETE */
-
-  if (actionBtn.classList.contains("delete-btn")) {
-    tasks = tasks.filter((task) => task.id !== id);
-
-    saveTasks();
-    renderTasks();
-  }
-
-  /* COMPLETE */
-
-  if (actionBtn.classList.contains("complete-btn")) {
-    const task = tasks.find((task) => task.id === id);
-
-    task.status =
-      task.status === "completed"
-        ? "pending"
-        : "completed";
-
-    saveTasks();
-    renderTasks();
-  }
-
-  /* EDIT */
-
-  if (actionBtn.classList.contains("edit-btn")) {
-    const task = tasks.find((task) => task.id === id);
-
-    const newTitle = prompt(
-      "Edit Task",
-      task.title
-    );
-
-    if (newTitle) {
-      task.title = newTitle;
-
-      saveTasks();
-      renderTasks();
-    }
-  }
-});
-
-/* --------------------------
-   SEARCH
---------------------------- */
-
-searchInput.addEventListener("input", () => {
-  const value =
-    searchInput.value.toLowerCase();
-
-  document
-    .querySelectorAll(".task-card")
-    .forEach((card) => {
-      const text =
-        card.querySelector(".task-title")
-        .textContent
-        .toLowerCase();
-
-      card.style.display =
-        text.includes(value)
-          ? "block"
-          : "none";
+function editTask(id) {
+    let task = tasks.find(function (task) {
+        return task.id === id;
     });
-});
 
-/* --------------------------
-   FILTER CATEGORY
---------------------------- */
+    let newTitle = prompt("Edit task", task.title);
 
-filterCategory.addEventListener(
-  "change",
-  () => {
-    const value =
-      filterCategory.value;
-
-    document
-      .querySelectorAll(".task-card")
-      .forEach((card) => {
-        if (
-          value === "all" ||
-          card.dataset.category === value
-        ) {
-          card.style.display = "block";
-        } else {
-          card.style.display = "none";
-        }
-      });
-  }
-);
-
-/* --------------------------
-   COUNTERS
---------------------------- */
-
-function updateCounters() {
-  totalTasks.textContent =
-    tasks.length;
-
-  const completed =
-    tasks.filter(
-      (task) =>
-        task.status === "completed"
-    ).length;
-
-  completedTasks.textContent =
-    completed;
-
-  pendingTasks.textContent =
-    tasks.length - completed;
+    if (newTitle !== null && newTitle.trim() !== "") {
+        task.title = newTitle.trim();
+        saveTasks();
+        showTasks();
+    }
 }
 
-/* --------------------------
-   LOCAL STORAGE
---------------------------- */
+searchInput.addEventListener("input", searchAndFilter);
+filterCategory.addEventListener("change", searchAndFilter);
+
+function searchAndFilter() {
+    let searchText = searchInput.value.toLowerCase();
+    let selectedCategory = filterCategory.value;
+    let cards = document.querySelectorAll(".task-card");
+
+    for (let i = 0; i < cards.length; i++) {
+        let card = cards[i];
+        let title = card.querySelector(".task-title").textContent.toLowerCase();
+        let category = card.dataset.category;
+
+        let matchSearch = title.includes(searchText);
+        let matchCategory = selectedCategory === "all" || selectedCategory === category;
+
+        if (matchSearch && matchCategory) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    }
+}
+
+function countTasks() {
+    let completeCount = 0;
+
+    for (let i = 0; i < tasks.length; i++) {
+        if (tasks[i].status === "completed") {
+            completeCount++;
+        }
+    }
+
+    totalTasks.textContent = tasks.length;
+    completedTasks.textContent = completeCount;
+    pendingTasks.textContent = tasks.length - completeCount;
+}
 
 function saveTasks() {
-  localStorage.setItem(
-    "tasks",
-    JSON.stringify(tasks)
-  );
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-/* --------------------------
-   CLEAR ALL
---------------------------- */
+clearAllBtn.addEventListener("click", function () {
+    let answer = confirm("Delete all tasks?");
 
-clearAllBtn.addEventListener(
-  "click",
-  () => {
-    if (
-      confirm(
-        "Delete all tasks?"
-      )
-    ) {
-      tasks = [];
-
-      saveTasks();
-      renderTasks();
+    if (answer === true) {
+        tasks = [];
+        saveTasks();
+        showTasks();
     }
-  }
-);
+});
 
-/* --------------------------
-   THEME TOGGLE
---------------------------- */
+themeBtn.addEventListener("click", function () {
+    document.body.classList.toggle("dark");
 
-themeBtn.addEventListener(
-  "click",
-  () => {
-    document.body.classList.toggle(
-      "light"
-    );
+    if (document.body.classList.contains("dark")) {
+        themeBtn.textContent = "Light Mode";
+        localStorage.setItem("theme", "dark");
+    } else {
+        themeBtn.textContent = "Dark Mode";
+        localStorage.setItem("theme", "light");
+    }
+});
 
-    const theme =
-      document.body.classList.contains(
-        "light"
-      )
-        ? "light"
-        : "dark";
+let grandparent = document.querySelector("#grandparent");
+let parentBox = document.querySelector("#parent");
+let childBtn = document.querySelector("#childBtn");
+let eventLog = document.querySelector("#eventLog");
 
-    document.body.setAttribute(
-      "data-theme",
-      theme
-    );
+let eventText = "";
 
-    localStorage.setItem(
-      "theme",
-      theme
-    );
+function addEventText(text) {
+    if (eventText === "") {
+        eventText = text;
+    } else {
+        eventText = eventText + " -> " + text;
+    }
 
-    updateThemeButton(theme);
-  }
-);
-
-const savedTheme =
-  localStorage.getItem("theme");
-
-if (savedTheme === "light") {
-  document.body.classList.add(
-    "light"
-  );
+    eventLog.textContent = eventText;
 }
 
-document.body.setAttribute(
-  "data-theme",
-  savedTheme === "light"
-    ? "light"
-    : "dark"
-);
+grandparent.addEventListener("click", function () {
+    eventText = "";
+    addEventText("Capturing: Grandparent");
+}, true);
 
-updateThemeButton(
-  document.body.dataset.theme
-);
+parentBox.addEventListener("click", function () {
+    addEventText("Capturing: Parent");
+}, true);
 
-function updateThemeButton(theme) {
-  const icon =
-    themeBtn.querySelector(".theme-icon");
+childBtn.addEventListener("click", function () {
+    addEventText("Capturing: Child");
+}, true);
 
-  const text =
-    themeBtn.querySelector(".theme-text");
+childBtn.addEventListener("click", function () {
+    addEventText("Bubbling: Child");
+});
 
-  if (theme === "light") {
-    icon.textContent = "☀";
-    text.textContent = "Light";
-    themeBtn.setAttribute(
-      "aria-label",
-      "Switch to dark theme"
-    );
-  } else {
-    icon.textContent = "☾";
-    text.textContent = "Dark";
-    themeBtn.setAttribute(
-      "aria-label",
-      "Switch to light theme"
-    );
-  }
-}
+parentBox.addEventListener("click", function () {
+    addEventText("Bubbling: Parent");
+});
 
-/* --------------------------
-   EVENT BUBBLING
---------------------------- */
-
-const grandparent =
-  document.querySelector(
-    "#grandparent"
-  );
-
-const parentBox =
-  document.querySelector(
-    "#parent"
-  );
-
-const child =
-  document.querySelector(
-    "#childBtn"
-  );
-
-child.addEventListener(
-  "click",
-  () => {
-    console.log("Child");
-  }
-);
-
-parentBox.addEventListener(
-  "click",
-  () => {
-    console.log("Parent");
-  }
-);
-
-grandparent.addEventListener(
-  "click",
-  () => {
-    console.log("Grandparent");
-  }
-);
-
-/* --------------------------
-   EVENT CAPTURING
---------------------------- */
-
-grandparent.addEventListener(
-  "click",
-  () => {
-    console.log(
-      "Capturing Grandparent"
-    );
-  },
-  true
-);
-
-parentBox.addEventListener(
-  "click",
-  () => {
-    console.log(
-      "Capturing Parent"
-    );
-  },
-  true
-);
-
-child.addEventListener(
-  "click",
-  () => {
-    console.log(
-      "Capturing Child"
-    );
-  },
-  true
-);
-
+grandparent.addEventListener("click", function () {
+    addEventText("Bubbling: Grandparent");
+});
